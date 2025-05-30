@@ -247,8 +247,8 @@ async function fetchJob_list(index) {
     "Connection": "keep-alive",
     // optionally add cookies if you have authenticated session cookies
   };
-  // const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&geoId=103644278&f_TPR=r86400&f_WT=2&start=${index}`;
-  const apiUrl = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&f_TPR=r86400&f_WT=2&geoId=103644278&origin=JOB_SEARCH_PAGE_JOB_FILTER&refresh=true&sortBy=DD&start=${index}'
+  const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&location=United%20States&f_TPR=r86400&f_WT=2&start=${index}`;
+  // const apiUrl = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&f_TPR=r86400&f_WT=2&geoId=103644278&origin=JOB_SEARCH_PAGE_JOB_FILTER&refresh=true&sortBy=DD&start=${index}'
   // &f_JIYN=true
   //keywords=Full%20Stack%20OR%20frontend%20OR%20backend%20OR%20javascript%20OR%20python
   try {
@@ -267,6 +267,7 @@ async function fetchJob_list(index) {
     if (response.status != 200) {
       const errorText = await response.data;
       console.error('Response body: failed', response.status);
+      console.log("error");
       return { len: 0, datas: [] };
     }//
     console.log(`Fetching jobs at start=${index}, status=${response.status}`);
@@ -327,6 +328,7 @@ async function fetchJob_list(index) {
     return { len: Array.from(jobCards).length, datas: jobsElem };
 
   } catch (error) {
+    console.log("error1");
     return { len: 0, datas: [] };
   }
 }
