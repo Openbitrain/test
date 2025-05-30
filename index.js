@@ -276,7 +276,6 @@ async function fetchJob_list(index) {
     const htmlText = await response.data;
     const dom = new JSDOM(htmlText);
     const doc = dom.window.document;
-
     const jobCards = doc.querySelectorAll('li > div.base-card');
     let jobsElem = [];
     let currenttime = new Date()
@@ -325,7 +324,7 @@ async function fetchJob_list(index) {
         jobsElem.push(fin);
       }
     }
-
+    console.log("card", Array.from(jobCards).length)
     return { len: Array.from(jobCards).length, datas: jobsElem };
 
   } catch (error) {
