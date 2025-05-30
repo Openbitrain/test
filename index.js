@@ -324,7 +324,9 @@ async function fetchJob_list(index) {
         jobsElem.push(fin);
       }
     }
-    console.log("card", Array.from(jobCards).length)
+    if (Array.from(jobCards).length == 0) {
+      console.log("---", htmlText)
+    }
     return { len: Array.from(jobCards).length, datas: jobsElem };
 
   } catch (error) {
