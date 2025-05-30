@@ -267,7 +267,7 @@ async function fetchJob_list(index) {
     if (response.status != 200) {
       const errorText = await response.data;
       console.error('Response body: failed', response.status);
-      console.log("error");
+      console.log("error", errorText);
       return { len: 0, datas: [] };
     }//
     console.log(`Fetching jobs at start=${index}, status=${response.status}`);
@@ -328,7 +328,7 @@ async function fetchJob_list(index) {
     return { len: Array.from(jobCards).length, datas: jobsElem };
 
   } catch (error) {
-    console.log("error1", error);
+    // console.log("error1", error);
     return { len: 0, datas: [] };
   }
 }
