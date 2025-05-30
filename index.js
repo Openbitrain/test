@@ -8,6 +8,7 @@ import mongoose from 'mongoose';
 import { Console, error } from 'console';
 import { SocksProxyAgent } from 'socks-proxy-agent';
 import axios from 'axios';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 
 //---------------------------------mongodb---------------
 const jobSchema = new mongoose.Schema({
@@ -29,6 +30,43 @@ const Job = mongoose.model('jobs', jobSchema);
 const uri = 'mongodb+srv://bl:dbpassword@cluster0.srbit0j.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0';
 
 
+const proxyList = [
+  "104.237.250.13:80",       // Transparent
+  "159.65.230.46:8888",      // Transparent
+  "142.93.202.130:3128",     // Transparent
+  "47.89.184.18:3128",       // Transparent
+  "23.237.210.82:80",        // Transparent (HTTPS)
+  "91.227.248.40:80",        // Transparent
+  "192.81.129.252:3132",     // Transparent (HTTPS)
+  "51.254.78.223:80",        // Transparent
+  "51.15.228.52:8080",       // Transparent
+  "152.228.154.20:80",       // Transparent
+  "98.64.128.182:3128",      // Transparent
+  "49.12.216.1:80",          // Transparent
+  "103.253.103.50:80",       // Transparent (Japan)
+  "47.91.65.23:3128",        // Transparent (Germany)
+  "94.142.139.119:31280",    // Transparent (Russia, HTTPS)
+  "91.239.7.75:80",          // Transparent (France)
+  "91.239.7.66:80",          // Transparent (France)
+  "194.183.190.10:8080",     // Transparent (Ukraine, HTTPS)
+  "38.7.197.5:999",          // Transparent (United States, HTTPS)
+  "45.204.9.197:9999",       // Transparent (South Africa)
+  "185.105.102.179:80",      // Transparent (Iran)
+  "104.248.81.109:3128",     // Transparent (United States, HTTPS)
+  "185.105.102.189:80",      // Transparent (Iran)
+  "38.250.126.201:999",      // Transparent (United States, HTTPS)
+  "41.254.63.14:8080",       // Transparent (Libya, HTTPS)
+  "185.141.213.174:8080",    // Transparent (Iran)
+  "175.116.194.101:3128",    // Transparent (Korea, HTTPS)
+  "180.89.56.240:3128",      // Transparent (China)
+  "77.75.95.14:80",          // Transparent (Lebanon)
+  "149.86.142.84:8080",      // Transparent (United States)
+  "112.126.68.169:8384",     // Transparent (China)
+  "104.129.194.46:10089",    // Transparent (United States, HTTPS)
+  "8.146.207.243:8888",      // Transparent (United States)
+  "8.140.104.98:3128",       // Transparent (United States)
+  "106.12.156.26:80",        // Transparent (China)
+];
 await mongoose.connect(uri)
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.error('MongoDB connection error:', err));
@@ -260,12 +298,16 @@ async function fetchJob_list(index) {
     //     password: 'RrHb4GAf8V'
     //   }
     // };//
-
+    const proxyUrl = `http://${proxyList[Math.floor(Math.random() * proxyList.length)]}`;
+    const agent = new HttpsProxyAgent(proxyUrl);
 
     const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
-    const agent = new SocksProxyAgent(proxy1);
+    const agent1 = new SocksProxyAgent(proxy1);
 
-    const response = await axios.get(apiUrl, { headers });
+    const response = await axios.get(apiUrl, {
+      httpAgent: agent,
+      headers
+    });
     if (response.status != 200) {
       const errorText = await response.data;
       console.error('Response body: failed', response.status);
