@@ -251,16 +251,16 @@ async function fetchJob_list(index) {
   // &f_JIYN=true
   //keywords=Full%20Stack%20OR%20frontend%20OR%20backend%20OR%20javascript%20OR%20python
   try {
-    const proxy = {
-      host: '81.161.5.236',
-      port: 19117,
-      auth: {
-        username: 'matwilland',
-        password: 'RrHb4GAf8V'
-      }
-    };//
-    const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
-    const agent = new SocksProxyAgent(proxy1);
+    // const proxy = {
+    //   host: '81.161.5.236',
+    //   port: 19117,
+    //   auth: {
+    //     username: 'matwilland',
+    //     password: 'RrHb4GAf8V'
+    //   }
+    // };//
+    // const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
+    // const agent = new SocksProxyAgent(proxy1);
 
     const response = await axios.get(apiUrl);
     if (response.status != 200) {
@@ -277,10 +277,9 @@ async function fetchJob_list(index) {
     const jobCards = doc.querySelectorAll('li > div.base-card');
     let jobsElem = [];
     let currenttime = new Date()
-
     for (let i = 0; i < Array.from(jobCards).length; i++) {
       const card = Array.from(jobCards)[i];
-      // console.log(i)
+      console.log(i)
 
       const titleElem = card.querySelector('[class*="_title"]');
       const urlElem = card.querySelector('a.base-card__full-link');
@@ -304,27 +303,22 @@ async function fetchJob_list(index) {
         const urlObj = new URL(clink);
         companyLink = urlObj.origin + urlObj.pathname;
       }
-      let cur_post = extractTimeAndNumber(postTime)
-      let postedtime;
-      if (cur_post.time == "minute" && !cutcompanies.includes(company)) {
-        postedtime = new Date(currenttime.getTime() - 4 * 60 * 60 * 1000 - cur_post.number * 60 * 1000)
-        postedtime = postedtime.toISOString();
-        const fin = {
-          title: titleElem ? titleElem.textContent.trim() : null,
-          company,
-          joblink,
-          postTime,
-          companyLink, postedtime,
-          location: locationElem ? locationElem.textContent.trim() : null,
-          postId,
 
-        };
-        jobsElem.push(fin);
-      }
+      const fin = {
+        title: titleElem ? titleElem.textContent.trim() : null,
+        company,
+        joblink,
+        postTime,
+        companyLink, postedtime,
+        location: locationElem ? locationElem.textContent.trim() : null,
+        postId,
+
+      };
+      // console.log("each list count", jobsElem.length)
+
+      jobsElem.push(fin);
     }
-
     return jobsElem;
-
   } catch (error) {
     return [];
   }
@@ -359,7 +353,7 @@ async function fetchAndParseJobs(cnt) {
 
     for (let i = 0; i < cnt; i++) {
       let resu = await fetchJob_list(i * 25);
-      delay(100);
+      // console.log(resu.length)
       jobCards.push(...resu);
     }
     jobCards.sort((a, b) => parsePostTimeToMinutes(a.postTime) - parsePostTimeToMinutes(b.postTime));
@@ -451,9 +445,9 @@ app.get('/time', async (req, res) => {
 })
 
 
-setInterval(async () => {
-  await fetchAndParseJobs(20);
-}, 20 * 1000);//
+// setInterval(async () => {
+//   await fetchAndParseJobs(20);
+// }, 20 * 1000);//
 
 app.get('/status', async (req, res) => {
   res.json({ status })

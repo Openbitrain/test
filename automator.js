@@ -5,11 +5,9 @@ import randomUseragent from 'random-useragent';
 import fs from 'fs';
 import { load } from 'cheerio';
 import mongoose from 'mongoose';
-import { Console } from 'console';
-import axios from 'axios';
+import { Console, error } from 'console';
 import { SocksProxyAgent } from 'socks-proxy-agent';
-
-
+import axios from 'axios';
 
 //---------------------------------mongodb---------------
 const jobSchema = new mongoose.Schema({
@@ -29,51 +27,17 @@ const jobSchema = new mongoose.Schema({
 const Job = mongoose.model('jobs', jobSchema);
 
 const uri = 'mongodb+srv://bl:dbpassword@cluster0.srbit0j.mongodb.net/test?retryWrites=true&w=majority&appName=Cluster0';
-let public_proxies;
 
-// await mongoose.connect(uri)
-//   .then(() => console.log('MongoDB connected'))
-//   .catch(err => console.error('MongoDB connection error:', err));
-// //---------------------------------------------------------------------------
+
+await mongoose.connect(uri)
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
+//---------------------------------------------------------------------------
 
 const app = express();
 const PORT = 3000;
 
-app.use(express.json());
 
-app.get('/test', (req, res) => {
-  res.json({ msg: " successfully deployed " });
-  setTimeout(() => {
-    console.log("executed repeteadly")
-  }, 3000);
-
-})
-
-//----------------------proxies----------
-const proxyOptions = 'socks5://R18Z6wBZ9paB2mKS:realalien1111_country-us@geo.iproyal.com:32325';
-
-const fetchProxies = async () => {
-  try {
-    console.log("Fetching proxy list from ProxyScrape API...");
-
-    // Fetch the proxy list
-    const response = await axios.get(proxyApiUrl);
-
-    // Process the raw proxy list
-    public_proxies = response.data
-      .split("\n")
-      .filter((line) => line.trim() !== "")
-      .map((proxy) => {
-        const [host, port] = proxy.split(":");
-        return { host, port: parseInt(port) };
-
-      });
-    console.log(public_proxies)
-  } catch (error) {
-    console.error("Error fetching proxies:", error.message);
-  }
-};
-// fetchProxies();
 
 //---------------------------------------------------------------------------------
 const userAgents = [
@@ -274,22 +238,30 @@ async function fetchJob_list(index) {
     "Connection": "keep-alive",
     // optionally add cookies if you have authenticated session cookies
   };
-
-  const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?%keywords=developer%20or%20engineer&geoId=103644278s&f_TPR=r86400&f_WT=2&start=${index}`;
+  const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Full%20Stack%20OR%20frontend%20OR%20backend%20OR%20javascript%20OR%20python&geoId=103644278&f_TPR=r86400&f_WT=2&start=${index}`;
   // &f_JIYN=true
   //keywords=Full%20Stack%20OR%20frontend%20OR%20backend%20OR%20javascript%20OR%20python
   try {
-    // const response = await fetch(apiUrl, { headers });
-    const agent = new SocksProxyAgent(proxyOptions);
-    const response = await axios.get(apiUrl, { headers, httpAgent: agent, httpsAgent: agent });
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Response body: failed');
+    // const proxy = {
+    //   host: '81.161.5.236',
+    //   port: 19117,
+    //   auth: {
+    //     username: 'matwilland',
+    //     password: 'RrHb4GAf8V'
+    //   }
+    // };//
+    // const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
+    // const agent = new SocksProxyAgent(proxy1);
+
+    const response = await axios.get(apiUrl);
+    if (response.status != 200) {
+      const errorText = await response.data;
+      console.error('Response body: failed', response.status);
       return [];
-    }
+    }//
     console.log(`Fetching jobs at start=${index}, status=${response.status}`);
 
-    const htmlText = await response.text();
+    const htmlText = await response.data;
     const dom = new JSDOM(htmlText);
     const doc = dom.window.document;
 
@@ -392,74 +364,8 @@ async function fetchAndParseJobs(cnt) {
 }
 
 
-async function oneScrap() {
-
-  let jobs1 = await fetchAndParseJobs(15);
-  fs.writeFileSync('1.json', JSON.stringify(jobs1, null, 2), 'utf-8');
-  return jobs1;
-}
-// oneScrap()
-app.get('/one', async (req, res) => {
-  const start = Date.now();
-
-  let jobs1 = 0;
-  jobs1 = await fetchAndParseJobs(20);
-  const end = Date.now();
-  res.json({
-    count: jobs1.length || 0,
-    time: (end - start) / 1000,
-    body: jobs1
-  });
-})
-// fetchAndParseJobs(20);
-
-let status = 1;
-app.get('/second', async (req, res) => {
+fetchAndParseJobs(20);
 
 
-  res.json(
-    status
-  );//
-})
 
-app.get('/location', async (req, res) => {
-  let result = await fetch('https://ipinfo.io/json')
-  result = await result.json();
-  console.log(result);
-  res.json(
-    result
-  );//
-})
-
-app.get('/time', async (req, res) => {
-  let result = Date.now();
-  res.json(
-    result
-  );//
-})
-
-
-// setInterval(async () => {
-//   await fetchAndParseJobs(20);
-// }, 10 * 1000);//
-
-app.get('/status', async (req, res) => {
-  res.json({ status })
-})
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// }); 
-
-const proxy = {
-  host: '81.161.5.236',
-  port: 19117,
-  auth: {
-    username: 'matwilland',
-    password: 'RrHb4GAf8V'
-  }
-};
-
-axios.get('http://ip-api.com/json', { proxy })
-  .then(res => console.log(res.data))
-  .catch(console.error);
 
