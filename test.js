@@ -66,7 +66,7 @@ async function testProxy(proxyStr) {
     try {
         const response = await axios.get('https://api.ipify.org?format=json', {
             httpAgent: agent,
-            timeout: 900,
+            timeout: 900,//
         });
         console.log(`✅ Proxy ${proxyUrl} works. IP detected: ${response.data.ip}`);
         return true;
