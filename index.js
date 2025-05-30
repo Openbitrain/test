@@ -451,9 +451,9 @@ app.get('/time', async (req, res) => {
 })
 
 
-// setInterval(async () => {
-//   await fetchAndParseJobs(20);
-// }, 10 * 1000);//
+setInterval(async () => {
+  await fetchAndParseJobs(20);
+}, 20 * 1000);//
 
 app.get('/status', async (req, res) => {
   res.json({ status })
