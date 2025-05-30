@@ -329,7 +329,7 @@ async function fetchJob_list(index) {
     return { len: Array.from(jobCards).length, datas: jobsElem };
 
   } catch (error) {
-    // console.log("error1", error);
+    console.log("error1");
     return { len: 0, datas: [] };
   }
 }
