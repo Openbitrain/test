@@ -285,7 +285,7 @@ async function fetchJob_list(index) {
     "Connection": "keep-alive",
     // optionally add cookies if you have authenticated session cookies
   };
-  const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&geoId=103644278&f_TPR=r86400&f_WT=2&start=${index}&sortBy=DD&f_JIYN=true`;
+  const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&geoId=103644278&f_TPR=r300&f_WT=2&start=${index}`;
   // const apiUrl = 'https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&f_TPR=r86400&f_WT=2&geoId=103644278&origin=JOB_SEARCH_PAGE_JOB_FILTER&refresh=true&sortBy=DD&start=${index}'
   // &f_JIYN=true
   //keywords=Full%20Stack%20OR%20frontend%20OR%20backend%20OR%20javascript%20OR%20python
@@ -305,13 +305,13 @@ async function fetchJob_list(index) {
     // const agent1 = new SocksProxyAgent(proxy1);
 
     const response = await axios.get(apiUrl, {
-      httpAgent: agent,
+      // httpAgent: agent,
       headers
     });
     if (response.status != 200) {
       const errorText = await response.data;
       console.error('Response body: failed', response.status);
-      return { len: 0, datas: [] };
+      return { len: 0, datas: [], state: 0 };
     }//
     console.log(`Fetching jobs at start=${index}, status=${response.status}`);
 
@@ -321,10 +321,13 @@ async function fetchJob_list(index) {
     const jobCards = doc.querySelectorAll('li > div.base-card');
     let jobsElem = [];
     let currenttime = new Date()
-
+    if (Array.from(jobCards).length == 0) {
+      console.log("---", apiUrl)
+      return { len: 0, datas: [], state: 2 }
+    }
     for (let i = 0; i < Array.from(jobCards).length; i++) {
       const card = Array.from(jobCards)[i];
-      // console.log(i)
+      console.log(i)
 
       const titleElem = card.querySelector('[class*="_title"]');
       const urlElem = card.querySelector('a.base-card__full-link');
@@ -366,14 +369,11 @@ async function fetchJob_list(index) {
         jobsElem.push(fin);
       }
     }
-    if (Array.from(jobCards).length == 0) {
-      console.log("---", htmlText)
-    }
-    return { len: Array.from(jobCards).length, datas: jobsElem };
 
+    return { len: Array.from(jobCards).length, datas: jobsElem, state: 1 };
   } catch (error) {
     console.log("error1");
-    return { len: 0, datas: [] };
+    return { len: 0, datas: [], state: 0 };
   }
 }
 
@@ -404,10 +404,14 @@ async function fetchAndParseJobs(cnt) {
   try {
     let jobCards = []
 
-    for (let i = 0; i < cnt;) {
+    let i = 0;
+    while (1) {
       let resu = await fetchJob_list(i);
-      i = i + resu.len
-      jobCards.push(...resu.datas);
+      if (resu.state == 1) {
+        i = i + resu.len
+        jobCards.push(...resu.datas);
+      }
+      if (resu.state == 0) break;
       console.log("each", resu.len)
     }
     jobCards.sort((a, b) => parsePostTimeToMinutes(a.postTime) - parsePostTimeToMinutes(b.postTime));
@@ -417,6 +421,7 @@ async function fetchAndParseJobs(cnt) {
 
     return resul;//
   } catch (error) {
+
   }
 }
 
