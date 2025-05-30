@@ -247,7 +247,7 @@ async function fetchJob_list(index) {
     "Connection": "keep-alive",
     // optionally add cookies if you have authenticated session cookies
   };
-  const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=Full%20Stack%20OR%20frontend%20OR%20backend%20OR%20javascript%20OR%20python&geoId=103644278&f_TPR=r86400&f_WT=2&start=${index}`;
+  const apiUrl = `https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?keywords=developer%20or%20engineer&geoId=103644278&f_TPR=r86400&f_WT=2&start=${index}`;
   // &f_JIYN=true
   //keywords=Full%20Stack%20OR%20frontend%20OR%20backend%20OR%20javascript%20OR%20python
   try {
@@ -266,7 +266,7 @@ async function fetchJob_list(index) {
     if (response.status != 200) {
       const errorText = await response.data;
       console.error('Response body: failed', response.status);
-      return [];
+      return { len: 0, datas: [] };
     }//
     console.log(`Fetching jobs at start=${index}, status=${response.status}`);
 
@@ -277,9 +277,10 @@ async function fetchJob_list(index) {
     const jobCards = doc.querySelectorAll('li > div.base-card');
     let jobsElem = [];
     let currenttime = new Date()
+
     for (let i = 0; i < Array.from(jobCards).length; i++) {
       const card = Array.from(jobCards)[i];
-      console.log(i)
+      // console.log(i)
 
       const titleElem = card.querySelector('[class*="_title"]');
       const urlElem = card.querySelector('a.base-card__full-link');
@@ -303,24 +304,29 @@ async function fetchJob_list(index) {
         const urlObj = new URL(clink);
         companyLink = urlObj.origin + urlObj.pathname;
       }
+      let cur_post = extractTimeAndNumber(postTime)
+      let postedtime;
+      if (cur_post.time == "minute" && !cutcompanies.includes(company)) {
+        postedtime = new Date(currenttime.getTime() - 4 * 60 * 60 * 1000 - cur_post.number * 60 * 1000)
+        postedtime = postedtime.toISOString();
+        const fin = {
+          title: titleElem ? titleElem.textContent.trim() : null,
+          company,
+          joblink,
+          postTime,
+          companyLink, postedtime,
+          location: locationElem ? locationElem.textContent.trim() : null,
+          postId,
 
-      const fin = {
-        title: titleElem ? titleElem.textContent.trim() : null,
-        company,
-        joblink,
-        postTime,
-        companyLink, postedtime,
-        location: locationElem ? locationElem.textContent.trim() : null,
-        postId,
-
-      };
-      // console.log("each list count", jobsElem.length)
-
-      jobsElem.push(fin);
+        };
+        jobsElem.push(fin);
+      }
     }
-    return jobsElem;
+
+    return { len: Array.from(jobCards).length, datas: jobsElem };
+
   } catch (error) {
-    return [];
+    return { len: 0, datas: [] };
   }
 }
 
@@ -351,10 +357,11 @@ async function fetchAndParseJobs(cnt) {
   try {
     let jobCards = []
 
-    for (let i = 0; i < cnt; i++) {
-      let resu = await fetchJob_list(i * 25);
-      // console.log(resu.length)
-      jobCards.push(...resu);
+    for (let i = 0; i < cnt;) {
+      let resu = await fetchJob_list(i);
+      i = i + resu.len
+      jobCards.push(...resu.datas);
+      console.log("each", resu.len)
     }
     jobCards.sort((a, b) => parsePostTimeToMinutes(a.postTime) - parsePostTimeToMinutes(b.postTime));
     console.log("job", jobCards.length)
@@ -378,7 +385,7 @@ app.get('/one', async (req, res) => {
   const start = Date.now();
 
   let jobs1 = 0;
-  jobs1 = await fetchAndParseJobs(25);
+  jobs1 = await fetchAndParseJobs(250);
   const end = Date.now();
   res.json({
     count: jobs1.length || 0,
