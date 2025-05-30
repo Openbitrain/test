@@ -263,7 +263,7 @@ async function fetchJob_list(index) {
     const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
     const agent = new SocksProxyAgent(proxy1);
 
-    const response = await axios.get(apiUrl, { agent, headers });
+    const response = await axios.get(apiUrl, { headers });
     if (response.status != 200) {
       const errorText = await response.data;
       console.error('Response body: failed', response.status);
