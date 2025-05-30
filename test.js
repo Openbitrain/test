@@ -425,6 +425,6 @@ async function fetchAndParseJobs(cnt) {
 }
 
 
-await fetchAndParseJobs(20);
+fetchAndParseJobs(20);
 
 
