@@ -410,7 +410,7 @@ async function fetchAndParseJobs(cnt) {
                 i = i + resu.len
                 jobCards.push(...resu.datas);
             }
-            if (resu.state == 0) break;
+            if (resu.state == 2) break;
             console.log("each", resu.len)
         }
         jobCards.sort((a, b) => parsePostTimeToMinutes(a.postTime) - parsePostTimeToMinutes(b.postTime));
