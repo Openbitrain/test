@@ -1,4 +1,4 @@
-name: Run Node.js Script Every 10 Minutes
+name: Run Node.js Script Every 5 Minutes
 
 on:
   # Schedule the workflow to run every 5 minutes
