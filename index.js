@@ -432,7 +432,7 @@ app.get('/one', async (req, res) => {
   const start = Date.now();
 
   let jobs1 = 0;
-  jobs1 = await fetchAndParseJobs(150);
+  jobs1 = await fetchAndParseJobs(req.query.q);
   const end = Date.now();
   res.json({
     count: jobs1.length || 0,
