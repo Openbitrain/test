@@ -260,14 +260,15 @@ async function fetchJob_list(index) {
     //     password: 'RrHb4GAf8V'
     //   }
     // };//
+
+
     const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
     const agent = new SocksProxyAgent(proxy1);
 
-    const response = await axios.get(apiUrl, { headers });
+    const response = await axios.get(apiUrl, { agent, headers });
     if (response.status != 200) {
       const errorText = await response.data;
       console.error('Response body: failed', response.status);
-      console.log("error", errorText);
       return { len: 0, datas: [] };
     }//
     console.log(`Fetching jobs at start=${index}, status=${response.status}`);
