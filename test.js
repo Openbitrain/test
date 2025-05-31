@@ -289,7 +289,7 @@ async function fetchJob_list(index) {
         // };//
         const proxyUrl = `http://${proxyList[Math.floor(Math.random() * proxyList.length)]}`;
         const agent = new HttpsProxyAgent(proxyUrl);
-
+  
         // const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
         // const agent1 = new SocksProxyAgent(proxy1);
 
