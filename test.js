@@ -407,7 +407,7 @@ async function fetchAndParseJobs(cnt) {
 
         let resul = await fetchJob_job(jobCards);
         await connection.close();
-
+        console.log('MongoDB disconnected');
     } catch (error) {
 
     }
