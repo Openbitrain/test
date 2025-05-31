@@ -289,12 +289,12 @@ async function fetchJob_list(index) {
         // };//
         const proxyUrl = `http://${proxyList[Math.floor(Math.random() * proxyList.length)]}`;
         const agent = new HttpsProxyAgent(proxyUrl);
-  
+
         // const proxy1 = 'socks5://realalien1111_country-us:R18Z6wBZ9paB2mKS@geo.iproyal.com:32325';
         // const agent1 = new SocksProxyAgent(proxy1);
 
         const response = await axios.get(apiUrl, {
-            // httpAgent: agent,
+            httpAgent: agent,
             headers
         });
         if (response.status != 200) {
@@ -394,12 +394,12 @@ async function fetchAndParseJobs(cnt) {
 
         let i = 0;
         while (1) {
-            if (i > cnt) break;
             let resu = await fetchJob_list(i);
-            if (resu.length >= 1) {
+            if (resu.state == 1) {
                 i = i + resu.len
                 jobCards.push(...resu.datas);
             }
+            if (resu.state == 2) break;
             console.log("each", resu.len)
         }
         jobCards.sort((a, b) => parsePostTimeToMinutes(a.postTime) - parsePostTimeToMinutes(b.postTime));
@@ -414,6 +414,6 @@ async function fetchAndParseJobs(cnt) {
 }
 
 
-fetchAndParseJobs(150);//
+fetchAndParseJobs(20);//
 
 
