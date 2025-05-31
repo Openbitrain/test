@@ -394,12 +394,12 @@ async function fetchAndParseJobs(cnt) {
 
         let i = 0;
         while (1) {
+            if (i > cnt) break;
             let resu = await fetchJob_list(i);
-            if (resu.state == 1) {
+            if (resu.length >= 1) {
                 i = i + resu.len
                 jobCards.push(...resu.datas);
             }
-            if (resu.state == 2) break;
             console.log("each", resu.len)
         }
         jobCards.sort((a, b) => parsePostTimeToMinutes(a.postTime) - parsePostTimeToMinutes(b.postTime));
@@ -414,6 +414,6 @@ async function fetchAndParseJobs(cnt) {
 }
 
 
-fetchAndParseJobs(20);//
+fetchAndParseJobs(150);//
 
 
