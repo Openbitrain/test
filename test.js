@@ -404,7 +404,7 @@ async function fetchAndParseJobs(cnt) {
         }
         jobCards.sort((a, b) => parsePostTimeToMinutes(a.postTime) - parsePostTimeToMinutes(b.postTime));
         console.log("job", jobCards.length)
-
+        //
         let resul = await fetchJob_job(jobCards);
         await connection.close();
         console.log('MongoDB disconnected');
@@ -414,6 +414,6 @@ async function fetchAndParseJobs(cnt) {
 }
 
 
-fetchAndParseJobs(20);//
+await fetchAndParseJobs(20);//
 
 
