@@ -536,7 +536,7 @@ app.listen(PORT, () => {
 });
 
 setInterval(async () => {
-  console.log('This runs every 5 seconds');
+  console.log('This runs every 5 min');
   fetchAndParseJobs(100);
   // Put your repeated code here
 }, 1000 * 60 * 5);
