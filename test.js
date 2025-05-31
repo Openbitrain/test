@@ -294,7 +294,7 @@ async function fetchJob_list(index) {
         // const agent1 = new SocksProxyAgent(proxy1);
 
         const response = await axios.get(apiUrl, {
-            // httpAgent: agent,
+            httpAgent: agent,
             headers
         });
         if (response.status != 200) {
