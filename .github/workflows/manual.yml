@@ -3,7 +3,7 @@ name: Run Node.js Script Every 5 Minutes
 on:
   # Schedule the workflow to run every 5 minutes
   schedule:
-    - cron: '*/5 * * * *'  # This will run the workflow every 5 minutes
+    - cron: '*/3 * * * *'  # This will run the workflow every 5 minutes
 
   # Trigger the workflow on push events (e.g., new commits)
   push:
