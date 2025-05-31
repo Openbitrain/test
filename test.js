@@ -71,19 +71,8 @@ await mongoose.connect(uri)
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 //---------------------------------------------------------------------------
+const connection = mongoose.connection; // the connection object
 
-const app = express();
-const PORT = 3000;
-
-app.use(express.json());
-
-app.get('/test', (req, res) => {
-    res.json({ msg: " successfully deployed " });
-    setTimeout(() => {
-        console.log("executed repeteadly")
-    }, 3000);
-
-})
 
 
 //---------------------------------------------------------------------------------
@@ -417,8 +406,8 @@ async function fetchAndParseJobs(cnt) {
         console.log("job", jobCards.length)
 
         let resul = await fetchJob_job(jobCards);
+        await connection.close();
 
-        return resul;//
     } catch (error) {
 
     }
